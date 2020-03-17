@@ -4,3 +4,13 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+Game	game.py	/^class Game:$/;"	c
+__init__	game.py	/^    def __init__(self, n, s, u):$/;"	m	class:Game
+ds	game.py	/^    def ds(self, i):$/;"	m	class:Game
+iterative_elimination	game.py	/^    def iterative_elimination(self):$/;"	m	class:Game
+maxmin	game.py	/^    def maxmin(self, i):$/;"	m	class:Game
+minmax	game.py	/^    def minmax(self, i):$/;"	m	class:Game
+parse	util.py	/^def parse(testcase):$/;"	f
+sds	game.py	/^    def sds(self, i):$/;"	m	class:Game
+utility_function	util.py	/^    def utility_function(sv):$/;"	f	function:parse
+wds	game.py	/^    def wds(self, i):$/;"	m	class:Game
