@@ -4,5 +4,3 @@
 Requirenments:
 ---------------
 - python 3.7
-- numpy
-- pandas
