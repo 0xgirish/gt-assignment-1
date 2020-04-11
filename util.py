@@ -31,9 +31,10 @@ def parse(testcase):
             sv, uv = su_vector[:number_of_players], su_vector[number_of_players:]
 
             sv_encoding = ','.join(sv)
-            utility_sv_mapping[sv_encoding] = uv
+            utility_sv_mapping[sv_encoding] = ds.OneIndexList(uv)
         
-    # utility lookup for strategy vector should be O(1)
+    # utility lookup for strategy vector is O(1)
+    # utility profile for strategy vector sv is OneIndexed e.g. index starts from 1 no 0
     def utility_function(sv):
         """
         sv: strategy vector
