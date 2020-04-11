@@ -18,7 +18,7 @@ class Game:
         pass
 
     # return weakly_dominated_strategies for ith player
-    def wds(self, i
+    def wds(self, i):
         """
         i: ith player
         return: weakly_dominated_strategies for ith player:
