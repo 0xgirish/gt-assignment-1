@@ -1,3 +1,4 @@
+import logging
 import ds
 
 # parse testcase folder for strategy profiles of the player and utility function
@@ -10,7 +11,7 @@ def parse(testcase):
     with open(f'{testcase}/meta.txt', 'r') as metafile:
         # first line of meta file contains number_of_players (n)
         number_of_players = int(metafile.readline())
-        strategy_profile = ds.OneIndexList()
+        strategy_profile = ds.OneIndexedList()
         # next n line contains strategy profile of ith player
         for line in metafile.readlines():
             # strategies of ith player are comma separeted strings
@@ -31,10 +32,11 @@ def parse(testcase):
             sv, uv = su_vector[:number_of_players], su_vector[number_of_players:]
 
             sv_encoding = ','.join(sv)
-            utility_sv_mapping[sv_encoding] = ds.OneIndexList(uv)
+            utility_sv_mapping[sv_encoding] = ds.OneIndexedList(
+                    [float(u) for u in uv])
         
     # utility lookup for strategy vector is O(1)
-    # utility profile for strategy vector sv is OneIndexed e.g. index starts from 1 no 0
+    # utility profile for strategy vector sv is OneIndexed e.g. index starts from 1 not 0
     def utility_function(sv):
         """
         sv: strategy vector
@@ -42,6 +44,11 @@ def parse(testcase):
         """
 
         sv_encoding = ','.join(sv)
-        return utility_sv_mapping[sv_encoding]
+        try:
+            return utility_sv_mapping[sv_encoding]
+        except KeyError:
+            logging.warning(f'KeyError: unexpected strategy vector, {sv} [encoding = {sv_encoding}]')
+        
+        return None
 
     return number_of_players, strategy_profile, utility_function

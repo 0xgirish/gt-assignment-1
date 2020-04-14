@@ -2,7 +2,7 @@ import itertools
 from util import parse
 
 def test_parse():
-    testcase = 'input/test.5'
+    testcase = 'testdir'
     n, s, u = parse(testcase)
 
     assert n == 2, f'{testcase} [n] got {n} expected 2'
