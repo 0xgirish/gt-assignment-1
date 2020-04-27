@@ -101,7 +101,7 @@ class Game:
 
     # find Pure Strategy Nash Equilibrium if it exist
     def psne(self):
-        nash_eqilibrium = self._all_strategy_vectors() # nash equilibrium strate vectors set
+        nash_eqilibrium = self._all_strategy_vectors() # nash equilibrium strategy vectors set
         for i in range(1, self.n+1):
             ith_set = set()
             for si in self.s[i]:
@@ -109,7 +109,7 @@ class Game:
 
             nash_eqilibrium.intersection(ith_set)
 
-        if len(a):
+        if len(nash_eqilibrium):
             log.info('Pure Strategy Nash Equilibrium does not exist')
             return None
 
