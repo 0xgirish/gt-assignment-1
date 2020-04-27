@@ -23,22 +23,22 @@ class Game:
         """
         Si = self.s[i] # strategy set of ith player
 
-        sds, sds_util, exist = Si[1], self._utility_tensor(Si[1], i), true
+        sds, sds_util, exist = Si[1], self._utility_tensor(Si[1], i), True
         for k in range(2, len(Si)+1):
             si_util = self._utility_tensor(Si[k], i)
             if dominates(sds_util, si_util):
                 continue
             elif dominates(si_util, sds_util):
                 # strategy Si[k] is dominating strategy sds
-                sds, sds_util, exist = Si[k], si_util, true
+                sds, sds_util, exist = Si[k], si_util, True
             else:
-                sds_util, exist = np.maximum(sds_util, si_util), false
+                sds_util, exist = np.maximum(sds_util, si_util), False
 
         return sds if exist else None
 
     # _dominant_strategy_equilibrium reports dominant strategy equilibrium based on func_dominant_strategy
     # big-O runtime O(nπ#si) = O(n * #s1 * #s2 * #s3 ... #sn), where #si = number of strategies of ith player
-    def _dominant_strategy_equilibrium(func_dominant_strategy):
+    def _dominant_strategy_equilibrium(self, func_dominant_strategy):
         _dse_profile = list()
         for i in range(1 , self.n+1):
             _ds_for_ith_player = func_dominant_strategy(i)
@@ -46,7 +46,6 @@ class Game:
             # if dominant strategy does not exist for ith player then
             # _dse does not exist
             if _ds_for_ith_player is None:
-                logging.info(f'{equilibira_type} equilibrium does not exist')
                 return None
             _dse_profile.append(_ds_for_ith_player)
 
@@ -58,7 +57,10 @@ class Game:
         i: ith player
         return: strongly_dominant_strategy for ith player
         """
-        return self._dominant_strategy(i, lambda si, sj: np.all(si > sj))
+        sdse_profile = self._dominant_strategy(i, lambda si, sj: np.all(si > sj))
+        if sdse_profile is None:
+            logging.info('SDSE equilibria dose not exist')
+        return sdse_profile
 
     # find weakly dominant strategy for ith player
     def weakly_dominant_strategy(self, i):
@@ -66,7 +68,10 @@ class Game:
         i: ith player
         return: weakly_dominant_strategy for ith player
         """
-        return self._dominant_strategy(i, lambda si, sj: np.all(si >= sj) and np.any(si > sj))
+        wdse_profile = self._dominant_strategy(i, lambda si, sj: np.all(si >= sj) and np.any(si > sj))
+        if wdse_profile is None:
+            logging.info('WDSE equilibria dose not exist')
+        return wdse_profile
 
 
     # find strongly dominant strategy equilibrium if exist
