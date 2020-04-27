@@ -1,7 +1,7 @@
-import logging
+import math
 import itertools
 import numpy as np
-import math
+import logging
 
 # game class for basic funcationalties like, dominant strategies, iterative elimination
 class Game:
