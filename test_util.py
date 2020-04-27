@@ -1,4 +1,3 @@
-import itertools
 from util import parse
 
 

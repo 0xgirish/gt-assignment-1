@@ -1,11 +1,12 @@
 import logging
-import numpy as np
 import ds
 
-# parse testcase folder for strategy profiles of the player and utility
-# function
+
 def parse(testcase):
     """
+    parse testcase folder for strategy profiles of the player and utility
+    function
+
     testcase: testcase is path to the folder containing testcase metedata and utility.csv file
     return: (number_of_players, strategy_profile, utility_function)
     """
@@ -37,11 +38,12 @@ def parse(testcase):
             sv_encoding = ','.join(sv)
             utility_sv_mapping[sv_encoding] = ds.OneIndexedList([float(u) for u in uv])
 
-    # utility lookup for strategy vector is O(1)
-    # utility profile for strategy vector sv is OneIndexed e.g. index starts
-    # from 1 not 0
     def utility_function(sv):
         """
+        utility lookup for strategy vector is O(1)
+        utility profile for strategy vector sv is OneIndexed e.g. index starts
+        from 1 not 0
+
         sv: strategy vector
         return: utilities of all the players, e.g. list of utilities
         """
