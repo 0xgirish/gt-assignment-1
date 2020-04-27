@@ -1,6 +1,7 @@
 import itertools
 from util import parse
 
+
 def test_parse():
     testcase = 'testdir'
     n, s, u = parse(testcase)
@@ -11,7 +12,8 @@ def test_parse():
     res_s = [['0', '1'], ['0', '1']]
     assert s == res_s, f'{testcase} [strategy_profile] got {s}, expected {res_s}'
 
-    strategy_vectors = [['0', '0'], ['0', '1'], ['1', '0'], ['1', '1'], ['1', 'a']]
+    strategy_vectors = [['0', '0'], ['0', '1'],
+                        ['1', '0'], ['1', '1'], ['1', 'a']]
     results = [[-2, 2], [5, -5], [3, -3], [0, 0], None]
 
     for sv, res in zip(strategy_vectors, results):

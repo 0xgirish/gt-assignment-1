@@ -1,7 +1,9 @@
 import logging
+import numpy as np
 import ds
 
-# parse testcase folder for strategy profiles of the player and utility function
+# parse testcase folder for strategy profiles of the player and utility
+# function
 def parse(testcase):
     """
     testcase: testcase is path to the folder containing testcase metedata and utility.csv file
@@ -21,8 +23,9 @@ def parse(testcase):
 
     utility_sv_mapping = dict()
     with open(f'{testcase}/utility.csv', 'r') as utilityfile:
-        # first line contains index for strategy and utility, e.g. s1, s2, s3, u1, u2, u3
-        _ = utilityfile.readline() # ignore this line
+        # first line contains index for strategy and utility, e.g. s1, s2, s3,
+        # u1, u2, u3
+        _ = utilityfile.readline()  # ignore this line
 
         # for all other lines form utility_strategy_vector_mapping
         for line in utilityfile.readlines():
@@ -32,23 +35,25 @@ def parse(testcase):
             sv, uv = su_vector[:number_of_players], su_vector[number_of_players:]
 
             sv_encoding = ','.join(sv)
-            utility_sv_mapping[sv_encoding] = ds.OneIndexedList(
-                    [float(u) for u in uv])
-        
+            utility_sv_mapping[sv_encoding] = ds.OneIndexedList([float(u) for u in uv])
+
     # utility lookup for strategy vector is O(1)
-    # utility profile for strategy vector sv is OneIndexed e.g. index starts from 1 not 0
+    # utility profile for strategy vector sv is OneIndexed e.g. index starts
+    # from 1 not 0
     def utility_function(sv):
         """
         sv: strategy vector
         return: utilities of all the players, e.g. list of utilities
         """
 
+        assert len(sv) == number_of_players, f'strategy vector should have length equal to {number_of_players}'
+
         sv_encoding = ','.join(sv)
         try:
             return utility_sv_mapping[sv_encoding]
         except KeyError:
             logging.warning(f'KeyError: unexpected strategy vector, {sv} [encoding = {sv_encoding}]')
-        
+
         return None
 
     return number_of_players, strategy_profile, utility_function
