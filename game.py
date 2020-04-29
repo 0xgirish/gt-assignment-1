@@ -218,3 +218,5 @@ class Game:
             utility_si.append(self.u(sv)[i])
 
         return np.array(utility_si)
+
+# vim: set path=./:

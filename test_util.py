@@ -17,3 +17,5 @@ def test_parse():
 
     for sv, res in zip(strategy_vectors, results):
         assert u(sv) == res, f'{testcase} [utility_function] failed'
+
+# vim: set path=./:

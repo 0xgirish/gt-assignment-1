@@ -62,3 +62,5 @@ def parse(testcase):
         return None
 
     return number_of_players, strategy_profile, utility_function
+
+# vim: set path=./:

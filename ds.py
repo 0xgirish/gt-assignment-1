@@ -6,3 +6,5 @@ class OneIndexedList(list):
 
     def __getitem__(self, index):
         return list.__getitem__(self, index-1)
+
+# vim: set path=./:
