@@ -18,6 +18,9 @@ def parse(testcase):
         # next n line contains strategy profile of ith player
         for line in metafile.readlines():
             # strategies of ith player are comma separeted strings
+            if line[0] == '#':
+                # lines starting with a # are comments
+                continue
             strategies = (line[:-1]).replace(' ', '').split(',')
             if len(strategies) != 0:
                 strategy_profile.append(strategies)
