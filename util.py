@@ -12,8 +12,15 @@ def parse(testcase):
     """
 
     with open(f'{testcase}/meta.txt', 'r') as metafile:
-        # first line of meta file contains number_of_players (n)
-        number_of_players = int(metafile.readline())
+        while True:
+            line = metafile.readline()
+            if line[0] == '#':
+                # its a comment continue
+                continue
+            # first non comment line of meta file contains number_of_players (n)
+            number_of_players = int(line)
+            break
+            
         strategy_profile = ds.OneIndexedList()
         # next n line contains strategy profile of ith player
         for line in metafile.readlines():

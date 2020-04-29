@@ -1,3 +1,5 @@
+# its a simple comment which describe
+# that its a simple game for testing
 2
 0, 1
 0, 1
