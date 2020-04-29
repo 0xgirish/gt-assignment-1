@@ -9,6 +9,6 @@ Requirements:
 todos:
 ---------------
 [ ] implement MNSE method
-[ ] create test cases for game class
+[x] create test cases for game class
 [ ] create subclass for 2 player zero sum game
 [ ] implement mechanism design social choice function
