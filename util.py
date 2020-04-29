@@ -1,5 +1,4 @@
 import logging
-import ds
 
 
 def parse(testcase):
@@ -20,10 +19,12 @@ def parse(testcase):
             # first non comment line of meta file contains number_of_players (n)
             number_of_players = int(line)
             break
-            
-        strategy_profile = ds.OneIndexedList()
+
+        strategy_profile = list()
         # next n line contains strategy profile of ith player
         for line in metafile.readlines():
+            if len(strategy_profile) == number_of_players:
+                break
             # strategies of ith player are comma separeted strings
             if line[0] == '#':
                 # lines starting with a # are comments
@@ -46,7 +47,7 @@ def parse(testcase):
             sv, uv = su_vector[:number_of_players], su_vector[number_of_players:]
 
             sv_encoding = ','.join(sv)
-            utility_sv_mapping[sv_encoding] = ds.OneIndexedList([float(u) for u in uv])
+            utility_sv_mapping[sv_encoding] = [float(u) for u in uv]
 
     def utility_function(sv):
         """

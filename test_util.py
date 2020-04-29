@@ -2,7 +2,7 @@ from util import parse
 
 
 def test_parse():
-    testcase = 'testdir'
+    testcase = 'testdir/test.util'
     n, s, u = parse(testcase)
 
     assert n == 2, f'{testcase} [n] got {n} expected 2'

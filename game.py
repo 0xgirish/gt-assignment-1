@@ -31,10 +31,10 @@ class Game:
         return: _domination_strategy for ith player
         """
 
-        Si = self.s[i]  # strategy set of ith player
+        Si = self.s[i-1]  # strategy set of ith player
 
-        _ds, _ds_util, exist = Si[1], self._utility_tensor(Si[1], i), True
-        for k in range(2, len(Si)+1):
+        _ds, _ds_util, exist = Si[0], self._utility_tensor(Si[0], i), True
+        for k in range(1, len(Si)):
             si_util = self._utility_tensor(Si[k], i)
             if dominates(_ds_util, si_util):
                 continue
@@ -101,26 +101,31 @@ class Game:
 
         return self._dominant_strategy_equilibrium(self.weakly_dominant_strategy)
 
-    def _max_util_strategy_vector(self, si, i):
+    def _max_util_strategy_vector(self, i):
         """
         find strategy vector for which ith players get maximum utility if he/she plays si strategy
 
-        si: strategy played by ith player
         i: ith player
-        return: strategy vector(s) (si, s-i) for which ith player gets maximum utility
+        return: strategy vector(s) (si, s-i) for which ith player gets maximum utility, with fixed s-i
         """
 
         sv_set = set()  # strategy vector set which gives maximum utility for ith player
-        comb = [[si] if j == i else self.s[j] for j in range(1, self.n+1)]
+        comb = self.s[:i-1] + self.s[i:]
+        for _sv in itertools.product(*comb):
+            Si = self.s[i-1]
+            max_utility = -math.inf
+            _sv_set = set()
+            for si in Si:
+                sv = _sv[:i-1] + tuple(si) + _sv[i-1:]
+                sith_utility = self.u(sv)[i-1]
+                if max_utility < sith_utility:
+                    _sv_set.clear()
+                    _sv_set.add(sv)
+                    max_utility = sith_utility
+                elif max_utility == sith_utility:
+                    _sv_set.add(sv)
 
-        max_utility = -math.inf
-        for sv in itertools.product(*comb):
-            ith_sv_utility = self.u(sv)[i]
-            if max_utility < ith_sv_utility:
-                sv_set.clear()
-                sv_set.add(sv)
-            elif max_utility == ith_sv_utility:
-                sv_set.add(sv)
+            sv_set = sv_set.union(_sv_set)
 
         return sv_set
 
@@ -129,11 +134,10 @@ class Game:
 
         nash_eqilibrium = self._all_strategy_vectors()  # nash equilibrium strategy vectors set
         for i in range(1, self.n+1):
-            ith_set = set()
-            for si in self.s[i]:
-                ith_set.union(self._max_util_strategy_vector(si, i))
+            ith_set = self._max_util_strategy_vector(i)
 
-            nash_eqilibrium.intersection(ith_set)
+            nash_eqilibrium = nash_eqilibrium.intersection(ith_set)
+            logging.info(f'for {i} player {ith_set}')
 
         if len(nash_eqilibrium) == 0:
             logging.info('Pure Strategy Nash Equilibrium does not exist')
@@ -154,7 +158,7 @@ class Game:
         """find maxmin value and maxmin strategies of ith player"""
 
         maxmin_strategy_set, maxmin_utility = set(), -math.inf
-        for si in self.s[i]:
+        for si in self.s[i-1]:
             utility_vector = self._utility_tensor(si, i)
             min_utility = min(utility_vector)
             if maxmin_utility < min_utility:
@@ -170,7 +174,7 @@ class Game:
         """find minmax value and minmax strategies ith player"""
 
         minmax_strategy_set, minmax_utility = set(), math.inf
-        for si in self.s[i]:
+        for si in self.s[i-1]:
             utility_vector = self._utility_tensor(si, i)
             max_utility = max(utility_vector)
             if minmax_utility > max_utility:
@@ -188,7 +192,7 @@ class Game:
         # FIXME: clean the utility function of new game
         # by removing all the strategy vectors mappings containing removed strategy (wds)
         for i in range(1, self.n+1):
-            if len(self.s[i]) == 1:
+            if len(self.s[i-1]) == 1:
                 continue
             wds = self._domination_strategy(i, lambda x, y: np.all(x <= y) and np.any(x < y), domination_type=dominated)
             if wds is not None:
@@ -210,12 +214,12 @@ class Game:
     def _utility_tensor(self, si, i):
         """find all the utilities ith player can get if he/she plays si strategy"""
 
-        comb = [[si] if j == i else self.s[j] for j in range(1, self.n+1)]
+        comb = [[si] if j == i else self.s[j-1] for j in range(1, self.n+1)]
 
         utility_si = list()
         # (si, s-i) ∀ s-i ∈ S-i
         for sv in itertools.product(*comb):
-            utility_si.append(self.u(sv)[i])
+            utility_si.append(self.u(sv)[i-1])
 
         return np.array(utility_si)
 
