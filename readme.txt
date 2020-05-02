@@ -4,6 +4,7 @@
 Requirements:
 ---------------
 - python 3.7
+- numpy
 - pytest
 
 todos:
