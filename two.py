@@ -37,8 +37,7 @@ class TwoPlayerZeroSum(Game):
             utility_matrix1.append(utility1)
             utility_matrix2.append(utility2)
 
-        self.U1 = np.array(utility_matrix1)
-        self.U2 = np.array(utility_matrix2)
+        self.U = [np.array(utility_matrix1), np.array(utility_matrix2)]
 
     def saddle_point(self):
         """
@@ -62,8 +61,24 @@ class TwoPlayerZeroSum(Game):
         return: Mixed Strategy which is Nash Equilibrium
         """
 
-        # TODO: implement linear programming for zero sum game
-        # Compute: Zp := max z
-        # Subject to: sum { x(si)u(si, sii) ∀ sii ∈ SII } ≥ z
-        #             sum { x(si) } = 1; x(si) ≥ 0 ∀ si ∈ SI
-        pass
+        # for player 1
+        res1 = self._lp_msne(1)
+        res2 = self._lp_msne(2)
+
+        p_res1, p_res2 = res1.x[1:], res2.x[1:]
+        return p_res1, p_res2
+
+
+    def _lp_msne(self, i):
+        # solve for player i
+        f = np.array([1.0 if i == 0 else 0.0 for i in range(len(self.s[i-1])+1)])
+        a_ub = np.concatenate([np.ones((len(self.s[i-1]), 1)), -self.U[i-1]], axis=1)
+        b_ub = np.zeros(len(self.s[i-1]))
+
+        a_eq = np.array([0 if i == 0 else 1.0 for i in range(len(self.s[i-1])+1)])
+        b_eq = np.array([1.0])
+
+        r_bounds = (None, None)
+        p_bounds = [(0, 1.0) for _ in self.s[i-1]]
+
+        return linprog(f, A_ub=a_ub, b_ub=b_ub, A_eq=a_eq, b_eq=b_eq, bounds=[r_bounds, *p_bounds])
