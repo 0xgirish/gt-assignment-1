@@ -10,5 +10,5 @@ todos:
 ---------------
 [ ] implement MNSE method
 [x] create test cases for game class
-[ ] create subclass for 2 player zero sum game
+[x] create subclass for 2 player zero sum game
 [ ] implement mechanism design social choice function

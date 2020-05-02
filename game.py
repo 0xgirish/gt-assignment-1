@@ -1,13 +1,14 @@
+# Author : Girish Kumar, (2016csb1040@iitrpr.ac.in)
+
 import math
 import copy
 import itertools
 import numpy as np
 import logging
 
-# domination types
-dominant = np.maximum
-dominated = np.minimum
-
+# domination type
+strong_dominance = lambda x, y: np.all(x > y)
+weak_dominance = lambda x, y: np.all(x >= y) and np.any(x > y)
 
 class Game:
     """
@@ -21,13 +22,14 @@ class Game:
     def __init__(self, n, s, u):
         self.n, self.s, self.u = n, s, u
 
-    def _domination_strategy(self, i, dominates, domination_type):
+    def _dominant_strategy(self, i, dominance):
         """
-        _domination_strategy reports dominant strategy based on compare function, (dominates)
+        _dominant_strategy reports dominant strategy based on compare function, (dominance)
+        dominance functions can be used for strong dominance or weak dominance
         big-O runtime O(π#Si) => O(#s1 * #s2 * #s3 ... #sn), where #si = number of strategies of ith player
 
         i: ith player
-        dominates: comparision function, e.g np.all(si > sj) for strongly dominant strategy
+        dominance: dominance(si, sj) reports wether si dominates sj or not
         return: _domination_strategy for ith player
         """
 
@@ -36,15 +38,42 @@ class Game:
         _ds, _ds_util, exist = Si[0], self._utility_tensor(Si[0], i), True
         for k in range(1, len(Si)):
             si_util = self._utility_tensor(Si[k], i)
-            if dominates(_ds_util, si_util):
+            if dominance(_ds_util, si_util):
                 continue
-            elif dominates(si_util, _ds_util):
+            elif dominance(si_util, _ds_util):
                 # strategy Si[k] is dominating strategy
                 _ds, _ds_util, exist = Si[k], si_util, True
             else:
-                _ds_util, exist = domination_type(_ds_util, si_util), False
+                _ds_util, exist = np.maximum(_ds_util, si_util), False
 
         return _ds if exist else None
+
+    def _dominated_strategy(self, i, dominance):
+        """
+        _dominated_strategy reports dominated strategy based on compare function, (dominance)
+        dominance functions can be used for strong dominance or weak dominance
+        big-O runtime O(π#Si) => O(#s1 * #s2 * #s3 ... #sn), where #si = number of strategies of ith player
+
+        i: ith player
+        dominance: dominance(si, sj) reports wether si dominates sj or not
+        return: _dominated_strategy for ith player
+        """
+
+        Si = self.s[i-1]  # strategy set of ith player
+
+        _ds, _ds_util, exist = Si[0], self._utility_tensor(Si[0], i), True
+        for k in range(1, len(Si)):
+            si_util = self._utility_tensor(Si[k], i)
+            if dominance(_ds_util, si_util):
+                # strategy _ds dominates strategy Si[k], Si[k] is dominated strategy
+                return Si[k]
+            elif dominance(si_util, _ds_util):
+                # strategy Si[k] dominates strategy _ds, _ds is dominated strategy
+                return _ds
+            else:
+                _ds_util, exist = np.minimum(_ds_util, si_util), False
+
+        return None
 
     def _dominant_strategy_equilibrium(self, func_dominant_strategy):
         """
@@ -72,7 +101,7 @@ class Game:
         return: strongly_dominant_strategy for ith player
         """
 
-        sdse_profile = self._domination_strategy(i, lambda si, sj: np.all(si > sj), domination_type=dominant)
+        sdse_profile = self._dominant_strategy(i, strong_dominance)
         if sdse_profile is None:
             logging.info('SDSE equilibria dose not exist')
         return sdse_profile
@@ -85,8 +114,7 @@ class Game:
         return: weakly_dominant_strategy for ith player
         """
 
-        wdse_profile = self._domination_strategy(i, lambda si, sj: np.all(si >= sj) and np.any(si > sj),
-                                                 domination_type=dominant)
+        wdse_profile = self._dominant_strategy(i, weak_dominance)
         if wdse_profile is None:
             logging.info('WDSE equilibria dose not exist')
         return wdse_profile
@@ -152,7 +180,8 @@ class Game:
             logging.info(f'Calculating MSNE for {self.n} player game is out of question scope')
             return
 
-        # TODO: find two player MSNE using linear programming
+        # TODO: find msne for two player game using linear programming
+        # GT.pdf 5.2.6
 
     def maxmin(self, i):
         """find maxmin value and maxmin strategies of ith player"""
@@ -186,19 +215,24 @@ class Game:
 
         return minmax_utility, minmax_strategy_set
 
-    def iterative_elimination(self):
-        """iterative elimination of a game gives a new subgame with weakly dominated strategies removed"""
+    def iterative_elimination(self, domination_type=weak_dominance):
+        """
+        iterative elimination of a game gives a new subgame with weakly dominated strategies removed
+
+        domination_type: dominance func e.g. strong dominance, weak_dominance
+        return: subgame with no weakly (strongly) dominated straegy
+        """
 
         # FIXME: clean the utility function of new game
         # by removing all the strategy vectors mappings containing removed strategy (wds)
         for i in range(1, self.n+1):
             if len(self.s[i-1]) == 1:
                 continue
-            wds = self._domination_strategy(i, lambda x, y: np.all(x <= y) and np.any(x < y), domination_type=dominated)
+            wds = self._dominated_strategy(i, domination_type)
             if wds is not None:
                 s = copy.deepcopy(self.s)
                 s[i].remove(wds)
-                return Game(self, self.n, s, self.u).iterative_elimination()
+                return Game(self, self.n, s, self.u).iterative_elimination(domination_type)
 
         # no wds found for any player, return original game
         return Game(self, self.n, self.s, self.u)

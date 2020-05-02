@@ -1,6 +1,6 @@
 import logging
 
-from game import Game, dominant, dominated
+from game import Game
 import util
 
 
