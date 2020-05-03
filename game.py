@@ -215,27 +215,27 @@ class Game:
 
         return minmax_utility, minmax_strategy_set
 
-    def iterative_elimination(self, domination_type=weak_dominance):
+    def iterative_elimination(self, domination_type=strong_dominance):
         """
-        iterative elimination of a game gives a new subgame with weakly dominated strategies removed
+        iterative elimination of a game gives a new subgame with  dominated strategies removed
 
         domination_type: dominance func e.g. strong dominance, weak_dominance
         return: subgame with no weakly (strongly) dominated straegy
         """
 
         # FIXME: clean the utility function of new game
-        # by removing all the strategy vectors mappings containing removed strategy (wds)
+        # by removing all the strategy vectors mappings containing removed strategy (_ds)
         for i in range(1, self.n+1):
             if len(self.s[i-1]) == 1:
                 continue
-            wds = self._dominated_strategy(i, domination_type)
-            if wds is not None:
+            _ds = self._dominated_strategy(i, domination_type)
+            if _ds is not None:
                 s = copy.deepcopy(self.s)
-                s[i].remove(wds)
-                return Game(self, self.n, s, self.u).iterative_elimination(domination_type)
+                s[i-1].remove(_ds)
+                return Game(self.n, s, self.u).iterative_elimination(domination_type)
 
-        # no wds found for any player, return original game
-        return Game(self, self.n, self.s, self.u)
+        # no _ds found for any player, return original game
+        return Game(self.n, self.s, self.u)
 
     def _all_strategy_vectors(self):
         """find all strategy vectors"""
