@@ -90,19 +90,6 @@ def power_supports(strategy_profile):
             continue
         yield np_support
 
-def create_mixed_strategy(strategy_profile, support_sp, distribution):
-    mixed_strategy = dict()
-    ind = 0
-    for i in range(len(strategy_profile)):
-        spi = strategy_profile[i]
-        if spi in support_sp:
-            mixed_strategy[spi] = distribution[ind]
-            ind += 1
-        else:
-            mixed_strategy[spi] = 0.0
-
-    return mixed_strategy
-
 def undifined():
     """assert that function is not defined"""
     assert False, f'{inspect.stack()[2][3]} is not defined'

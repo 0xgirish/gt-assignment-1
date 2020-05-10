@@ -57,10 +57,7 @@ class TwoPlayer(Game):
                 result2 = self._lp_msne(support1, support2, 1)
                 result1 = self._lp_msne(support2, support1, 2)
                 if result1.success and result2.success:
-                    mixed_strategy_1 = util.create_mixed_strategy(self.s[0], self.s[0], result1.x[1:])
-                    mixed_strategy_2 = util.create_mixed_strategy(self.s[1], self.s[1], result2.x[1:])
                     return result1.x[1:], result2.x[1:]
-                    return mixed_strategy_1, mixed_strategy_2
 
         logging.warning('not able to find msne for the self')
 
