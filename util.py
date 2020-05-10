@@ -1,5 +1,7 @@
 import logging
-
+import numpy as np
+import itertools
+import inspect
 
 def parse(testcase):
     """
@@ -70,5 +72,39 @@ def parse(testcase):
         return None
 
     return number_of_players, strategy_profile, utility_function
+
+def power_supports(strategy_profile):
+    """
+    power_supports return all possible supports for strategy_profile
+
+    strategy_profile: index array which have been selected for support
+    """
+
+    n = len(strategy_profile)
+
+    # it is more likely that support will have size near to strategy_profile size
+    comb = np.array([[1, 0] for _ in range(n)])
+    for support in itertools.product(*comb):
+        np_support = np.array(support)
+        if np.all(np_support == 0):
+            continue
+        yield np_support
+
+def create_mixed_strategy(strategy_profile, support_sp, distribution):
+    mixed_strategy = dict()
+    ind = 0
+    for i in range(len(strategy_profile)):
+        spi = strategy_profile[i]
+        if spi in support_sp:
+            mixed_strategy[spi] = distribution[ind]
+            ind += 1
+        else:
+            mixed_strategy[spi] = 0.0
+
+    return mixed_strategy
+
+def undifined():
+    """assert that function is not defined"""
+    assert False, f'{inspect.stack()[2][3]} is not defined'
 
 # vim: set path=./:

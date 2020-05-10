@@ -52,7 +52,6 @@ class Game:
         """
         _dominated_strategy reports dominated strategy based on compare function, (dominance)
         dominance functions can be used for strong dominance or weak dominance
-        big-O runtime O(π#Si) => O(#s1 * #s2 * #s3 ... #sn), where #si = number of strategies of ith player
 
         i: ith player
         dominance: dominance(si, sj) reports wether si dominates sj or not
@@ -61,17 +60,16 @@ class Game:
 
         Si = self.s[i-1]  # strategy set of ith player
 
-        _ds, _ds_util, exist = Si[0], self._utility_tensor(Si[0], i), True
-        for k in range(1, len(Si)):
-            si_util = self._utility_tensor(Si[k], i)
-            if dominance(_ds_util, si_util):
-                # strategy _ds dominates strategy Si[k], Si[k] is dominated strategy
-                return Si[k]
-            elif dominance(si_util, _ds_util):
-                # strategy Si[k] dominates strategy _ds, _ds is dominated strategy
-                return _ds
-            else:
-                _ds_util, exist = np.minimum(_ds_util, si_util), False
+        for j in range(0, len(Si)):
+            _ds, _ds_util, exist = Si[j], self._utility_tensor(Si[j], i), True
+            for k in range(j+1, len(Si)):
+                si_util = self._utility_tensor(Si[k], i)
+                if dominance(_ds_util, si_util):
+                    # strategy _ds dominates strategy Si[k], Si[k] is dominated strategy
+                    return Si[k]
+                elif dominance(si_util, _ds_util):
+                    # strategy Si[k] dominates strategy _ds, _ds is dominated strategy
+                    return _ds
 
         return None
 
@@ -173,15 +171,7 @@ class Game:
 
         return nash_eqilibrium
 
-    def msne(self):
-        """find Mix Strategy Nash Equilibrium for 2 player game"""
 
-        if self.n > 2:
-            logging.info(f'Calculating MSNE for {self.n} player game is out of question scope')
-            return
-
-        # TODO: find msne for two player game using linear programming
-        # GT.pdf 5.2.6
 
     def maxmin(self, i):
         """find maxmin value and maxmin strategies of ith player"""
@@ -215,7 +205,7 @@ class Game:
 
         return minmax_utility, minmax_strategy_set
 
-    def iterative_elimination(self, domination_type=strong_dominance):
+    def _iterative_elimination(self, domination_type=strong_dominance):
         """
         iterative elimination of a game gives a new subgame with  dominated strategies removed
 
@@ -230,9 +220,10 @@ class Game:
                 continue
             _ds = self._dominated_strategy(i, domination_type)
             if _ds is not None:
+                logging.info(f'{_ds} for player {i}')
                 s = copy.deepcopy(self.s)
                 s[i-1].remove(_ds)
-                return Game(self.n, s, self.u).iterative_elimination(domination_type)
+                return Game(self.n, s, self.u)._iterative_elimination(domination_type)
 
         # no _ds found for any player, return original game
         return Game(self.n, self.s, self.u)
