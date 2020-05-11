@@ -168,3 +168,5 @@ class TwoPlayerZeroSum(TwoPlayer):
         p_bounds = [(0, 1.0) for _ in S]
 
         return linprog(f, A_ub=a_ub, b_ub=b_ub, A_eq=a_eq, b_eq=b_eq, bounds=[r_bounds, *p_bounds])
+
+# vim: set path=./:

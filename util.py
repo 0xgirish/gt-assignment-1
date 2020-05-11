@@ -90,7 +90,7 @@ def power_supports(strategy_profile):
             continue
         yield np_support
 
-def undifined():
+def undefined():
     """assert that function is not defined"""
     assert False, f'{inspect.stack()[2][3]} is not defined'
 
