@@ -7,21 +7,83 @@ from social_function import SocialChoiceFunc, EncodedList
 from mechanism_design import Environment
 
 def q1(testcase):
-    # TODO: implement function
-    util.undefined()
+    n, s, u = util.parse(testcase)
+    game = Game(n, s, u)
 
+    print('\n---------------- strong dominant strategies ----------------')
+    for i in range(1, n+1):
+        sds_i = game.strongly_dominant_strategy(i)
+        print(f'player {i}: sds = {sds_i}')
+
+    print('\n----------------- weak dominant strategies -----------------')
+    for i in range(1, n+1):
+        wds_i = game.weakly_dominant_strategy(i)
+        print(f'player {i}: wds = {wds_i}')
+
+
+    print('\n----------- strong dominant strategy equilibrium -----------')
+    print(f'sdse: {game.sdse()}')
+
+
+    print('\n------------ weak dominant strategy equilibrium ------------')
+    print(f'wdse: {game.wdse()}')
+
+
+    print('\n-------------- pure strategy nash equilibrium --------------')
+    psne = game.psne()
+    if psne is None:
+        psne = 'does not exist'
+    print(f'psne: {psne}')
+
+
+    print('\n-------------------------- maxmin --------------------------')
+    for i in range(1, n+1):
+        value, strategy_set = game.maxmin(i)
+        print(f'player {i}: value = {value}, strategies = {strategy_set}')
+
+
+    print('\n-------------------------- minmax --------------------------')
+    for i in range(1, n+1):
+        value, strategy_set = game.minmax(i)
+        print(f'player {i}: value = {value}, strategies = {strategy_set}')
+
+
+    
 def q2(testcase):
-    # TODO: implement function
-    util.undefined()
+    n, s, u = util.parse(testcase)
+    game = TwoPlayer(n, s, u)
+    msne = game.msne()
 
+    if msne is None:
+        msne = 'not able to find'
+
+    print(f'msne: {msne}')
+    
 def q3(testcase):
-    # TODO: implement function
-    util.undefined()
+    n, s, u = util.parse(testcase)
+    game = TwoPlayerZeroSum(n, s, u)
+    saddle_point = game.saddle_point()
+    msne = game.msne()
+
+    if saddle_point is None:
+        saddle_point = 'does not exist'
+
+    if msne is None:
+        msne = 'not able to find'
+
+    print(f'saddle point: {saddle_point}')
+    print(f'msne: {msne}')
 
 def q4(testcase):
-    # TODO: implement function
-    util.undefined()
+    n, type_sets, outcomes, u = util.parse_md(testcase)
+    env = Environment(n, type_sets, outcomes, u)
 
+    # for all possible social choice functions check dsic, export and non-dictatorial
+    for func in SocialChoiceFunc.all(type_sets, outcomes):
+        valid = env.dsic(func) and env.expost(func) and (not env.dictatorial(func))
+        if valid:
+            print(func)
+    
 if __name__ == '__main__':
     description = """
         game theory assignment solve questions for corresponding testcases

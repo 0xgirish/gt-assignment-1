@@ -59,7 +59,7 @@ class TwoPlayer(Game):
                 if result1.success and result2.success:
                     return result1.x[1:], result2.x[1:]
 
-        logging.warning('not able to find msne for the self')
+        logging.warning('not able to find msne for the game')
 
     def _lp_msne(self, self_support, opponent_support, player=1):
         """Find msne for self_support and opponent_support for player 1 and 2"""
@@ -123,11 +123,12 @@ class TwoPlayerZeroSum(TwoPlayer):
 
         return: saddle point if exist else None
         """
-        maxmin_of_player1 = self.maxmin(0)
-        minmax_of_player2 = self.minmax(1)
 
-        if maxmin_of_player1 == minmax_of_player2:
-            return maxmin_of_player1
+        maxmin_value, maxmin_strategy_set = self.maxmin(0)
+        minmax_value, minmax_strategy_set = self.minmax(1)
+
+        if maxmin_value == minmax_value:
+            return maxmin_strategy_set, minmax_strategy_set
         return None
 
     def iterative_elimination(self):
@@ -147,9 +148,10 @@ class TwoPlayerZeroSum(TwoPlayer):
         res1 = self._lp_msne(1)
         res2 = self._lp_msne(2)
 
-        p_res1, p_res2 = res1.x[1:], res2.x[1:]
-        return p_res1, p_res2
+        if res1.success and res2.success:
+            return res1.x[1:], res2.x[1:]
 
+        logging.warning('not able to find msne for zero sum game')
 
     def _lp_msne(self, player):
         S, U = self.s[player-1], self.U[player-1]
@@ -157,7 +159,7 @@ class TwoPlayerZeroSum(TwoPlayer):
             U = U.T
 
         # solve for player i
-        f = np.array([1.0 if i == 0 else 0.0 for i in range(len(S)+1)])
+        f = np.array([-1.0 if i == 0 else 0.0 for i in range(len(S)+1)])
         a_ub = np.concatenate([np.ones((len(S), 1)), -U], axis=1)
         b_ub = np.zeros(len(S))
 
