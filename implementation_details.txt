@@ -1,1 +1,160 @@
 # implementations details for provided algorithms
+
+## input format:
+-----------------
+> for questions 1, 2, 3
+  Program excepts a direactory which contains two files, meta.txt and utility.csv
+
+    meta.txt format:
+	---------------
+	> Any line which starts with a # is a comment and will be ignored
+	> First uncommented line represents number of players
+	> Next n lines represents strategy profiles of players {1,2, ..., n}
+
+	utility.csv format:
+	------------------
+	> First line contains indexes. e.g. s1, s2, u1, u2
+	> rest of the lines represents mapping of strategy vector to utilities of players
+	> e.g. utility.csv
+
+	| s1, s2, u1, u2
+	| a, x, 2, -2
+	| a, y, 0, 0
+	| b, x, -1, 1
+	| b, y, 3, -3
+	
+    > in above example utility.csv file, when player 1 & 2 plays strategies a & x respectively
+	> then player 1 & 2 gets utility of 2 & -2 respectively
+
+> for question 4
+  Program excepts a direactory which contains two files, meta.txt and utility.csv
+
+	meta.txt format:
+	---------------
+	> Any line which starts with a # is a comment and will be ignored
+	> First uncommented line represents number of players
+	> Next n uncommented lines represents type set of all the players {1, 2, ..., n}
+	> Last uncommented lines represents outcome set of the mechanism design setting
+
+
+	utility.csv format:
+	-----------------
+	> First line contains indexes. e.g. Outcome, Ѳ1, Ѳ2, U1, U2
+    > rest of the lines represents mapping of outcome and Ѳ to utilities of players
+    > e.g. utility.csv
+
+    | Outcome, Ѳ1, Ѳ2, U1, U2
+    | x, a1, a2, 100, 0
+    | x, a1, b2, 100, 0
+    | y, a1, a2, 50, 50
+    | y, a1, b2, 50, 50
+    | z, a1, a2, 0, 100
+    | z, a1, b2, 0, 25
+
+    > in the above example utility.csv file, when the outcome is 'x' and player 1 & 2 has types a1, a2 respectively
+    > then player 1 & 2 gets utility of 100, 0 respectively
+
+Note: for more examples see testdir/test.game and testdir/test.msne direactories
+
+## Game class to store a game
+> Game class has three attributes
+    1. n, number of players
+    2. s, strategy profile of each player
+    3. u, utility function of the game
+  utility function gives utilities in ordered list of all the players for given strategy vector
+
+### Time complexity in game class
+> utility function: O(1)
+    utility function use hashmap for mapping of strategy vector to utilities of players
+
+> strongly dominant strategy: O(#s1 * #s2 * ... * #sn), where #si = size of strategy profile set of player i
+
+> weakly dominant strategy: O(#s1 * #s2 * ... * #sn)
+
+> strong dominant strategy equilibrium: O(n * #s1 * #s2 * ... * #sn), n is number of players
+    I calculate strongly dominant strategy for each player, if not found then sdse does not exist
+
+> weak dominant strategy equilibrium: O(n * #s1 * #s2 * ... * #sn), n is number of players
+    wdse is calculated in similar manner as sdse
+
+> PSNE: O(n * #s1 * #s2 * ... * #sn)
+    pseudo code
+    psne_set = set(all strategy vectors)
+    for each player:
+       set_i -> find all strategy vectors such that player i gets maximum utility if Ѳ(-i) is fixed 
+       psne_set -> psne_set ∩ set_i         # take intersection
+
+    if psne_set is empty:
+        psne does not exist
+    else:
+        all strategies in psne_set are PSNE
+
+> maxmin for player i: O(#s1 * #s2 * ... * #sn)
+
+> minmax for player i: O(#s1 * #s2 * ... * #sn)
+
+
+## TwoPlayer class to store two player game
+> TwoPlayer class contains 3 attributes and it inherit Game class
+    1. s, strategy profiles of each player
+    2. u, utility function, which uses hashmap under the hood
+    3. U, utility matrix
+
+    msne: runtime is exponential
+    pseudo code
+
+    for each possible support:
+        calculate msne using scipy.optimize.linprog
+    reference: Game Theory, MICHAEL MASCHLER, chapter 5, 5.2.5
+
+## TwoPlayerZeroSum class to store two player zero sum game
+> TwoPlayerZeroSum class inherit from TwoPlayer class
+
+    saddle_point: O(#s1 * #s2)
+    to calculate saddle point I calculate maxmin for player 1 and minmax for player 2
+    and check if they are equal then I return intersection of maxmin strategies and minmax strategies
+
+    msne:
+    pseudo code
+    calculate msne using scipy.optimize.linprog
+    reference: Game Theory, MICHAEL MASCHLER, chapter 5, 5.2.6
+
+## SocialChoiceFunc class
+> SocialChoiceFunc class represents a social choice functions
+    mapping from theta -> outcomes
+
+## Environment class
+> Environment class contains information about mechanism design environment
+    Environment class has 4 attributes
+    1. n, number of players
+    2. type_sets, type sets of each player
+    3. outcomes
+    4. utility function, uses hashmap under the hood
+
+> Environment class has three methods
+    1. dsic, checks whether a SocialChoiceFunc is DSIC
+    2. expost, checks whether a SocialChoiceFunc is ex-post efficient
+    3. dictatorial, checks whether a SocialChoiceFunc is dictatorial
+
+Time complexity:
+---------------
+
+> dsic: O((#t1 + #t2 + ... + #tn) * (#t1 * #t2 * ... * #tn)), whete #ti is size of type set of player i
+> expost: O(n * #t1 * #t2 * ... * #tn)
+> dictatorial: O(n * #t1 * #t2 * ... * #tn)
+
+Finding all social choice functions according the question 4
+-------------------------------------------------------------
+pseudo code
+for all possible mappings from theta -> outcomes: func
+do
+    check dsic(func), expost(func) & (not dictatorial(func))
+    if satisfy all above properties; then
+        print func
+    endif
+done
+
+time complexity: O(num_all_functions * (2*n + #t1 + #t2 + ... + #tn) * (#t1 * #t2 *  ... * #tn))
+----------------
+where num_all_functions are number of all possible social choice functions
+num_all_functions = #t1^(m) * #t2^(m) * ... * #tn^(m), where m = #outcome = size of outcome set

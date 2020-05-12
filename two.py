@@ -128,7 +128,7 @@ class TwoPlayerZeroSum(TwoPlayer):
         minmax_value, minmax_strategy_set = self.minmax(1)
 
         if maxmin_value == minmax_value:
-            return maxmin_strategy_set, minmax_strategy_set
+            return maxmin_strategy_set.intersection(minmax_strategy_set)
         return None
 
     def iterative_elimination(self):
