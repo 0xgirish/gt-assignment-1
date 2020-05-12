@@ -101,8 +101,8 @@ def parse_md(testcase):
 
             if len(type_sets) < number_of_players:
                 type_i = (line[:-1]).replace(' ', '').split(',')
-                if len(type) != 0:
-                    type_sets.append(type)
+                if len(type_i) != 0:
+                    type_sets.append(type_i)
                 continue
 
             if outcomes is None:

@@ -1,0 +1,5 @@
+# testcase for Q4 social choice functions
+2
+a1
+a2, b2
+x, y, z

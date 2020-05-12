@@ -80,7 +80,8 @@ def q4(testcase):
 
     # for all possible social choice functions check dsic, export and non-dictatorial
     for func in SocialChoiceFunc.all(type_sets, outcomes):
-        valid = env.dsic(func) and env.expost(func) and (not env.dictatorial(func))
+        dsic, expost, non_dictatorial = env.dsic(func), env.expost(func), (not env.dictatorial(func))
+        valid = dsic and expost and non_dictatorial
         if valid:
             print(func)
     

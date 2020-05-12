@@ -7,7 +7,7 @@ class EncodedList(list):
     """ EncodedList class provide encode method for mapping in dictonary """
 
     def encode(self):
-        return ','.join(self.theta)
+        return ','.join(self)
 
 
 class SocialChoiceFunc:
@@ -24,7 +24,8 @@ class SocialChoiceFunc:
         f: f reports the outcome for a given Ѳ
     """
     def __init__(self, id, theta_s, mapping_s):
-        size, self.func  = len(theta_s), dict()
+        size, self.func, self.id = len(theta_s), dict(), id
+        self.theta_s = theta_s
         for i in range(size):
             theta, mapping = theta_s[i], mapping_s[i]
             self.func[theta.encode()] = mapping
@@ -39,7 +40,7 @@ class SocialChoiceFunc:
         """ pretty print for SocialChoiceFunc  """
 
         repr = f'\nsocial choice function: #{self.id}\n'
-        repr += '===================================='
+        repr += '====================================\n'
         for theta in self.theta_s:
             repr += f'{theta} -> {self.func[theta.encode()]}\n'
         repr += '====================================\n'

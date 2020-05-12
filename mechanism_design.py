@@ -42,11 +42,11 @@ class Environment:
                 true_theta = copy.deepcopy(theta_hat)
                 true_theta[player] = type
 
-                fhat = func(EncodedList(theta_hat))
-                ftrue = func(EncodedList(true_theta))
+                fhat = func.f(EncodedList(theta_hat))
+                ftrue = func.f(EncodedList(true_theta))
 
-                ui_fhat = func(EncodedList([fhat, *true_theta]))[player]
-                ui_ftrue = func(EncodedList([ftrue, *true_theta]))[player]
+                ui_fhat = self.u(EncodedList([fhat, *true_theta]))[player]
+                ui_ftrue = self.u(EncodedList([ftrue, *true_theta]))[player]
 
                 if ui_fhat > ui_ftrue:
                     return False
@@ -73,12 +73,13 @@ class Environment:
         func: SocialChoiceFunc
         """
 
+        is_expost = True
         for theta in self.thetas:
-            ftheta = func(EncodedList(theta))
-            sum_ftheta = sum(self.u(EncodedList([ftheta, *theta])))
+            ftheta = func.f(EncodedList(theta))
+            u_ftheta = np.array(self.u(EncodedList([ftheta, *theta])))
             for x in self.outcomes:
-                sum_xtheta = sum(self.u(EncodedList([x, *theta])))
-                if sum_xtheta > sum_ftheta:
+                u_xtheta = np.array(self.u(EncodedList([x, *theta])))
+                if np.all(u_xtheta >= u_ftheta) and np.any(u_xtheta > u_ftheta):
                     return False
 
         return True
@@ -90,17 +91,14 @@ class Environment:
         func: SocialChoiceFunc
         """
 
+        compare = np.array([True for _ in range(self.n)])
         for theta in self.thetas:
-            ftheta = func(EncodedList(theta))
+            ftheta = func.f(EncodedList(theta))
             u_ftheta = np.array(self.u(EncodedList([ftheta, *theta])))
-            compare = np.array([True for _ in range(self.n)])
             for x in self.outcomes:
                 u_xtheta = np.array(self.u(EncodedList([x, *theta])))
                 compare = compare & (u_ftheta >= u_xtheta)
 
-            if np.any(compare):
-                return True
-
-        return False
+        return np.any(compare)
 
 # vim: set path=./:
