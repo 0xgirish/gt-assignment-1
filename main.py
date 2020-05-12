@@ -106,7 +106,7 @@ if __name__ == '__main__':
     solver = {1: q1, 2: q2, 3: q3, 4: q4}
     for i in range(len(args.q)):
         question, testcase = args.q[i], args.testcase[i]
-        solve = solver.get(question, lambda _: parser.print_help())
+        solve = solver.get(question, lambda _: print(f'\nInvalid question number: {question}\n'))
 
     	# solve question for testcase
         print(f'\n\033[1m\033[1;32m=================== solving question {question} =====================')
