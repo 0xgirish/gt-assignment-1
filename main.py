@@ -57,7 +57,7 @@ def q2(testcase):
     if msne is None:
         msne = 'not able to find'
 
-    print(f'msne: {msne}')
+    print(f'\nmsne: (P1, P2) = {msne}\n')
     
 def q3(testcase):
     n, s, u = util.parse(testcase)
@@ -71,8 +71,8 @@ def q3(testcase):
     if msne is None:
         msne = 'not able to find'
 
-    print(f'saddle point: {saddle_point}')
-    print(f'msne: {msne}')
+    print(f'\nsaddle point: {saddle_point}')
+    print(f'msne: (P1, P2) =  {msne}\n')
 
 def q4(testcase):
     n, type_sets, outcomes, u = util.parse_md(testcase)
@@ -109,6 +109,8 @@ if __name__ == '__main__':
         solve = solver.get(question, lambda _: parser.print_help())
 
     	# solve question for testcase
+        print(f'\n\033[1m\033[1;32m=================== solving question {question} =====================')
+        print(f'\033[1;31mtestcase: {testcase}\033[0m')
         solve(testcase)
 
 # vim: set path=./:
